@@ -30,7 +30,7 @@
 
 - name: "Copy RHEL 7 SIO Files"
   copy:
-    src: ./sio_packages/
+    src: ./files/
     dest: /tmp/
     mode: 0644
 
