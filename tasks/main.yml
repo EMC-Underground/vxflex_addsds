@@ -58,7 +58,7 @@
   set_fact:
     sdsIpList: "{{ sds_Ips.results | map(attribute='ansible_facts.sdsIps') | list }}"
 - debug:
-    var: sdsIpList
+    var: body
 
 - name: "Create main payload"
   set_fact:
