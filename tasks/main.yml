@@ -62,7 +62,7 @@
 
 - name: "Create main payload"
   set_fact:
-    body: "{{ body | combine( {'protectionDomainId': protection_domain_id.json,'name': ansible_facts['nodename'],'sdsIpList': sdsIpList} ) }}"
+    body: "{{ {'protectionDomainId': protection_domain_id.json,'name': ansible_facts['nodename'],'sdsIpList': sdsIpList} }}"
 
 - name: "Add SDS Server to ProtectionDomain PD1"
   uri:
