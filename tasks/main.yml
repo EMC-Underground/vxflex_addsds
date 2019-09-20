@@ -12,6 +12,26 @@
       - 202
   register: msg
 
+- name: "Query for SDS"
+  uri:
+    url: https://{{ vxflex_gateway_ip }}:{{ vxflex_gateway_https_port }}/api/types/Sds/instances/action/queryIdByKey
+    return_content: yes
+    user: "{{ vxflex_gateway_username }}"
+    password: "{{ msg.json }}"
+    body: { "name": "{{ ansible_facts['nodename'] }}"}
+    force_basic_auth: yes
+    validate_certs: False
+    status_code:
+      - 200
+      - 201
+      - 202
+      - 500
+  register: sds_query_result
+
+- name: "Test Skipping the rest of the Playbook SDS already exisits"
+  meta: end_host
+  when: "sds_query_result.status == 200"
+
 - name: "Query Protection ID to pass to Create Device"
   uri:
     url: https://{{ vxflex_gateway_ip }}:{{ vxflex_gateway_https_port }}/api/types/ProtectionDomain/instances/action/queryIdByKey
