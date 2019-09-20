@@ -15,6 +15,7 @@
 - name: "Query for SDS"
   uri:
     url: https://{{ vxflex_gateway_ip }}:{{ vxflex_gateway_https_port }}/api/types/Sds/instances/action/queryIdByKey
+    method: POST
     return_content: yes
     user: "{{ vxflex_gateway_username }}"
     password: "{{ msg.json }}"
