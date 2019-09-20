@@ -20,6 +20,7 @@
     user: "{{ vxflex_gateway_username }}"
     password: "{{ msg.json }}"
     body: { "name": "{{ ansible_facts['nodename'] }}"}
+    body_format: json
     force_basic_auth: yes
     validate_certs: False
     status_code:
