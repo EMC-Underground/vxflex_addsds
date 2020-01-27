@@ -10,7 +10,9 @@
       - 200
       - 201
       - 202
-  register: msg
+  register: auth
+  tags:
+    - add_sds
 
 - name: "Query for SDS"
   uri:
@@ -18,7 +20,7 @@
     method: POST
     return_content: yes
     user: "{{ vxflex_gateway_username }}"
-    password: "{{ msg.json }}"
+    password: "{{ auth.json }}"
     body: { "name": "{{ ansible_facts['nodename'] }}"}
     body_format: json
     force_basic_auth: yes
@@ -29,17 +31,21 @@
       - 202
       - 500
   register: sds_query_result
+  tags:
+    - add_sds
 
 - name: "Test Skipping the rest of the Playbook SDS already exisits"
   meta: end_host
   when: "sds_query_result.status == 200"
+  tags:
+    - add_sds
 
 - name: "Query Protection ID to pass to Create Device"
   uri:
     url: https://{{ vxflex_gateway_ip }}:{{ vxflex_gateway_https_port }}/api/types/ProtectionDomain/instances/action/queryIdByKey
     method: POST
     user: "{{ vxflex_gateway_username }}"
-    password: "{{ msg.json }}"
+    password: "{{ auth.json }}"
     body: { "name": "{{ vxflex_protection_domain_name }}"}
     force_basic_auth: yes
     body_format: json
@@ -49,55 +55,76 @@
       - 201
       - 202
   register: protection_domain_id
+  tags:
+    - add_sds
 
 - name: "Copy RHEL 7 SIO Files"
   copy:
     src: ./files/EMC-ScaleIO-sds-{{ vxflex_version }}.el7.x86_64.rpm
     dest: /tmp/
     mode: 0644
+  tags:
+    - add_sds
 
 - name: "Copy RHEL 7 SIO Files"
   copy:
     src: ./files/EMC-ScaleIO-lia-{{ vxflex_version }}.el7.x86_64.rpm
     dest: /tmp/
     mode: 0644
+  tags:
+    - add_sds
 
 - name: "Install SIO SDS"
   yum:
     name: '/tmp/EMC-ScaleIO-sds-{{ vxflex_version }}.el7.x86_64.rpm'
     state: present
+  tags:
+    - add_sds
 
 - name: "Install SIO LIA"
   yum:
     name: '/tmp/EMC-ScaleIO-lia-{{ vxflex_version }}.el7.x86_64.rpm'
     state: present
+  tags:
+    - add_sds
 
 - name: "Find MDM Ip's"
   set_fact:
     mdm_ip: "{{ ansible_facts['all_ipv4_addresses'] | ipaddr( vxflex_mdm_cidr ) }}"
+  tags:
+    - add_sds
 
 - name: "Create sdsIp's"
   set_fact:
     sdsIps: "{{ {'SdsIp': {'ip':item, 'role':'all'}} }}"
   register: sds_Ips
   with_items: "{{ mdm_ip }}"
+  tags:
+    - add_sds
 
 - name: "Create sdsIpList"
   set_fact:
     sdsIpList: "{{ sds_Ips.results | map(attribute='ansible_facts.sdsIps') | list }}"
+  tags:
+    - add_sds
+
 - debug:
     var: protection_domain_id
+  tags:
+    - [ never, debug ]
 
 - name: "Create main payload"
   set_fact:
     body: "{{ {'protectionDomainId': protection_domain_id.json,'name': ansible_facts['nodename'],'sdsIpList': sdsIpList} }}"
+  tags:
+    - add_sds
 
 - name: "Add SDS Server to ProtectionDomain PD1"
   uri:
     url: https://{{ vxflex_gateway_ip }}:{{ vxflex_gateway_https_port }}/api/types/Sds/instances
     method: POST
     user: "{{ vxflex_gateway_username }}"
-    password: "{{ msg.json }}"
+    password: "{{ auth.json }}"
     body: "{{body}}"
     force_basic_auth: yes
     body_format: json
@@ -106,3 +133,5 @@
       - 200
       - 201
       - 202
+  tags:
+    - add_sds
