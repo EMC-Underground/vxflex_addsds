@@ -36,11 +36,11 @@
   tags:
     - add_sds
 
-- name: "Test Skipping the rest of the Playbook SDS already exisits"
-  meta: end_host
-  when: "sds_query_result.status == 200"
-  tags:
-    - add_sds
+#- name: "Test Skipping the rest of the Playbook SDS already exisits"
+#  meta: end_host
+#  when: "sds_query_result.status == 200"
+#  tags:
+#    - add_sds
 
 - name: "Query Protection ID to pass to Create Device"
   uri:
