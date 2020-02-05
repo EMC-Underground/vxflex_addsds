@@ -36,6 +36,13 @@
   tags:
     - add_sds
 
+- name: Display sds_query_resul"
+  debug:
+    var: sds_query_result
+  run_once: True
+  tags:
+    - [ never,debug ]
+
 #- name: "Test Skipping the rest of the Playbook SDS already exisits"
 #  meta: end_host
 #  when: "sds_query_result.status == 200"
@@ -113,6 +120,7 @@
 
 - debug:
     var: protection_domain_id
+  run_once: True
   tags:
     - [ never, debug ]
 
