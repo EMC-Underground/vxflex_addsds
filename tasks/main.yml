@@ -36,12 +36,12 @@
   tags:
     - add_sds
 
-- name: Display sds_query_resul"
+- name: "Display sds_query_result"
   debug:
     var: sds_query_result
   run_once: True
   tags:
-    - [ never,debug ]
+    - [ never, debug ]
 
 - name: "Query Protection ID to pass to Create Device"
   uri:
@@ -132,7 +132,7 @@
     method: POST
     user: "{{ vxflex_gateway_username }}"
     password: "{{ auth.json }}"
-    body: "{{body}}"
+    body: "{{ body }}"
     force_basic_auth: yes
     body_format: json
     validate_certs: False
