@@ -123,7 +123,7 @@
   tags:
     - add_sds
 
-- name: "Add SDS Server to ProtectionDomain PD1"
+- name: "Add SDS Server to Protection Domain {{ vxflex_protection_domain_name }}"
   uri:
     url: "https://{{ vxflex_gateway_ip }}:{{ vxflex_gateway_https_port }}\
     /api/types/Sds/instances"
@@ -138,5 +138,6 @@
       - 200
       - 201
       - 202
+  when: not (sds_query_result.status == 200)
   tags:
     - add_sds
