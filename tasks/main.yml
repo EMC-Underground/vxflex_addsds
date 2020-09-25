@@ -118,10 +118,16 @@
   tags:
     - [ never, debug ]
 
+- name: "Append sds to the SDS Node Name"
+  set_fact:
+    sdsNodeName: "sds-{{ ansible_facts['nodename'] }}"
+  tags:
+    - add_sds
+
 - name: "Create main payload"
   set_fact:
     body: "{{ {'protectionDomainId': protection_domain_id.json,
-    'name': ansible_facts['nodename'],'sdsIpList': sdsIpList} }}"
+    'name': sdsNodeName,'sdsIpList': sdsIpList} }}"
   tags:
     - add_sds
 
