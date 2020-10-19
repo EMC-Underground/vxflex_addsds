@@ -61,10 +61,14 @@
   register: protection_domain_id
   tags:
     - add_sds
+    
+- name: Get version of CentOS
+  command: cat /etc/redhat-release | awk '{print $4}' | awk -F. '{print $1}'
+  register: el_version
 
 - name: "Copy RHEL 7 SDS Files"
   copy:
-    src: ./files/EMC-ScaleIO-sds-{{ vxflex_version }}.el7.x86_64.rpm
+    src: ./files/EMC-ScaleIO-sds-{{ vxflex_version }}.el{{ el_version }}.x86_64.rpm
     dest: /tmp/
     mode: 0644
   tags:
@@ -72,7 +76,7 @@
 
 - name: "Copy RHEL 7 LIA Files"
   copy:
-    src: ./files/EMC-ScaleIO-lia-{{ vxflex_version }}.el7.x86_64.rpm
+    src: ./files/EMC-ScaleIO-lia-{{ vxflex_version }}.el{{ el_version }}.x86_64.rpm
     dest: /tmp/
     mode: 0644
   tags:
@@ -80,14 +84,14 @@
 
 - name: "Install SIO SDS"
   yum:
-    name: '/tmp/EMC-ScaleIO-sds-{{ vxflex_version }}.el7.x86_64.rpm'
+    name: '/tmp/EMC-ScaleIO-sds-{{ vxflex_version }}.el{{ el_version }}.x86_64.rpm'
     state: present
   tags:
     - add_sds
 
 - name: "Install SIO LIA"
   yum:
-    name: '/tmp/EMC-ScaleIO-lia-{{ vxflex_version }}.el7.x86_64.rpm'
+    name: '/tmp/EMC-ScaleIO-lia-{{ vxflex_version }}.el{{ el_version }}.x86_64.rpm'
     state: present
   tags:
     - add_sds
