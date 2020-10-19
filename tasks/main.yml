@@ -63,10 +63,16 @@
     - add_sds
     
 - name: Get version of CentOS
-  command: cat /etc/redhat-release | awk '{print $4}' | awk -F. '{print $1}'
-  register: el_version
+  shell: cat /etc/redhat-release | awk '{print $4}' | awk -F. '{print $1}'
+  register: centos_version
   tags:
     - add_sds
+
+- name: Set OS version fact
+  set_fact:
+    el_version: "{{ centos_version.stdout }}"
+    tags:
+      - add_sds
 
 - name: "Copy RHEL 7 SDS Files"
   copy:
@@ -88,6 +94,7 @@
   yum:
     name: '/tmp/EMC-ScaleIO-sds-{{ vxflex_version }}.el{{ el_version }}.x86_64.rpm'
     state: present
+    disable_gpg_check: yes
   tags:
     - add_sds
 
@@ -95,6 +102,7 @@
   yum:
     name: '/tmp/EMC-ScaleIO-lia-{{ vxflex_version }}.el{{ el_version }}.x86_64.rpm'
     state: present
+    disable_gpg_check: yes
   tags:
     - add_sds
 
